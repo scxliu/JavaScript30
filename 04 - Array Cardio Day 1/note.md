@@ -26,3 +26,7 @@
 
 - Array.prototype.includes()
   > The includes() method determines whether an array includes a certain value among its entries, returning true or false as appropriate.
+
+- regex 的用法
+  > test , search , exec , match , replace 
+  https://hackmd.io/@Heidi-Liu/regex
