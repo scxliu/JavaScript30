@@ -1,22 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+      const data = fetch(endpoint)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+          return data;
+        })
+        .then((data) => {
+          return data.map((e) => {
+            return {
+              name: `${e.city}, ${e.state}`,
+              population: Number(e.population),
+            };
+          });
+        })
+        .then((data) => {
+          setInputListener(data);
+        });
 
-  <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
-    <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
-    </ul>
-  </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+      function setInputListener(data) {
+        let filterQ = "";
+        let re = "";
+        let dataDom = "";
+        let sugList = document.querySelector(".suggestions");
 
-</script>
-</body>
+        document
+          .querySelector(".search")
+          .addEventListener("input", function (e) {
+            filterQ = e.target.value;
+            re = new RegExp(filterQ, "gi");
+            re.lastIndex = 0;
+
+            dataDom = data
+              .filter((e) => {
+                return re.test(e.name);
+              })
+              .map((e) => {
+                let str = e.name.replaceAll(
+                  re,
+                  `<span class="hl">${filterQ}</span>`
+                );
+
+                console.log(e.population.toLocaleString("en-US"));
+                return `<li><span class="name">${str}</span><span class="population">${e.population.toLocaleString(
+                  "en-US"
+                )}</span></li>`;
+              })
+              .join("\n");
+            sugList.innerText = "";
+            sugList.insertAdjacentHTML("afterbegin", dataDom);
+          });
+      }
+    </script>
+  </body>
 </html>
